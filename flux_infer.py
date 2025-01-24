@@ -33,8 +33,7 @@ def inference(
 
     # Download checkpoint
     repo_path = snapshot_download(repo_id=resume_path)
-    #mask = #image_data["layers"][0]
-    mask_array = np.array(mask)
+
     mask_processor = VaeImageProcessor(
         vae_scale_factor=8, do_normalize=False, do_binarize=True, do_convert_grayscale=True
     )
