@@ -40,12 +40,12 @@ def infer(person_image_file,cloth_image_file):
         cloth_image = Image.open(cloth_image_file).convert("RGB")
 
         # Extract input parameters
-        cloth_type = request.form.get('cloth_type', 'upper')
-        width = int(request.form.get('width', 768))
-        height = int(request.form.get('height', 1024))
-        num_inference_steps = int(request.form.get('num_inference_steps', 50))
-        guidance_scale = float(request.form.get('guidance_scale', 2.5))
-        seed = int(request.form.get('seed', -1))
+        cloth_type ='upper'
+        width = 768
+        height = 1024
+        num_inference_steps = 50
+        guidance_scale = 3.0
+        seed = 42
 
         # Resize images
         person_image = resize_and_crop(person_image, (width, height))
@@ -78,7 +78,8 @@ def infer(person_image_file,cloth_image_file):
         return result_image
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(e)
+        return e#jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     infer(person_image_file="yo.png",cloth_image_file="sweater.png")
