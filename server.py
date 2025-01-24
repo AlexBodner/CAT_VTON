@@ -33,53 +33,48 @@ def initialize_model():
 pipeline, mask_processor, automasker = initialize_model()
 
 def infer(person_image_file,cloth_image_file):
-    try:
+    # Read images from file data
+    person_image = Image.open(person_image_file).convert("RGB")
+    cloth_image = Image.open(cloth_image_file).convert("RGB")
 
-        # Read images from file data
-        person_image = Image.open(person_image_file).convert("RGB")
-        cloth_image = Image.open(cloth_image_file).convert("RGB")
+    # Extract input parameters
+    cloth_type ='upper'
+    width = 768
+    height = 1024
+    num_inference_steps = 50
+    guidance_scale = 3.0
+    seed = 42
 
-        # Extract input parameters
-        cloth_type ='upper'
-        width = 768
-        height = 1024
-        num_inference_steps = 50
-        guidance_scale = 3.0
-        seed = 42
+    # Resize images
+    person_image = resize_and_crop(person_image, (width, height))
+    cloth_image = resize_and_padding(cloth_image, (width, height))
 
-        # Resize images
-        person_image = resize_and_crop(person_image, (width, height))
-        cloth_image = resize_and_padding(cloth_image, (width, height))
+    # Generate mask
+    mask = automasker(person_image, cloth_type)["mask"]
+    mask = mask_processor.blur(mask, blur_factor=9)
 
-        # Generate mask
-        mask = automasker(person_image, cloth_type)["mask"]
-        mask = mask_processor.blur(mask, blur_factor=9)
+    # Generate random seed
+    generator = torch.Generator(device="cuda").manual_seed(seed) if seed != -1 else None
 
-        # Generate random seed
-        generator = torch.Generator(device="cuda").manual_seed(seed) if seed != -1 else None
+    # Run pipeline
+    result_image =inference(
+    person_image, 
+    cloth_image, 
+    cloth_type="upper",
+    num_steps=50, 
+    guidance_scale=30.0, 
+    seed=42, 
+    width=768,
+    height=1024
+    )
 
-        # Run pipeline
-        result_image =inference(
-        person_image, 
-        cloth_image, 
-        cloth_type="upper",
-        num_steps=50, 
-        guidance_scale=30.0, 
-        seed=42, 
-        width=768,
-        height=1024
-        )
+    # Convert PIL Image to bytes
+    img_byte_arr = BytesIO()
+    result_image.save(img_byte_arr, format='PNG')
+    img_byte_arr = img_byte_arr.getvalue()
 
-        # Convert PIL Image to bytes
-        img_byte_arr = BytesIO()
-        result_image.save(img_byte_arr, format='PNG')
-        img_byte_arr = img_byte_arr.getvalue()
+    return result_image
 
-        return result_image
-
-    except Exception as e:
-        print(e)
-        return e#jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     infer(person_image_file="yo.png",cloth_image_file="sweater.png")
