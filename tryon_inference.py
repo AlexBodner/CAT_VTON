@@ -18,8 +18,15 @@ def run_inference(
 ):
     # Build pipeline
     if pipe is None:
-        transformer = FluxTransformer2DModel.from_pretrained("models_hf/transformer", torch_dtype=torch.bfloat16)
-        pipe = FluxFillPipeline.from_pretrained("models_hf/flux_pipeline", transformer=transformer, torch_dtype=torch.bfloat16).to("cuda")
+        transformer = FluxTransformer2DModel.from_pretrained(
+            "xiaozaa/catvton-flux-beta", 
+            torch_dtype=torch.bfloat16
+        )
+        pipe = FluxFillPipeline.from_pretrained(
+            "black-forest-labs/FLUX.1-dev",
+            transformer=transformer,
+            torch_dtype=torch.bfloat16
+        ).to("cuda")
     else:
         pipe.to("cuda")
 
