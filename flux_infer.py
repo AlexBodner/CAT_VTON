@@ -57,7 +57,7 @@ def inference(
         
         # Convert to numpy array and process mask
         mask_array = np.array(mask)
-        is_black = np.all(mask_array < 10, axis=2)
+        is_black = np.all(mask_array < 10)
         mask = Image.fromarray(((~is_black) * 255).astype(np.uint8))
         
         # Save files to temp directory
