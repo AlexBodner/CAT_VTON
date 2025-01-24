@@ -10,7 +10,6 @@ from model.cloth_masker import AutoMasker
 from model.pipeline import CatVTONPipeline
 from utils import init_weight_dtype, resize_and_crop, resize_and_padding
 from flux_infer import inference
-app = Flask(__name__)
 
 # Load model and related components
 def initialize_model():
@@ -33,19 +32,8 @@ def initialize_model():
 
 pipeline, mask_processor, automasker = initialize_model()
 
-@app.route('/infer', methods=['POST'])
-def infer():
+def infer(person_image_file,cloth_image_file):
     try:
-        # Check if the post request has the file part
-        if 'person_image' not in request.files or 'cloth_image' not in request.files:
-            return jsonify({'error': 'No file part in the request'}), 400
-
-        person_image_file = request.files['person_image']
-        cloth_image_file = request.files['cloth_image']
-
-        # If the user does not select a file, the browser submits an empty part without filename
-        if person_image_file.filename == '' or cloth_image_file.filename == '':
-            return jsonify({'error': 'No selected file'}), 400
 
         # Read images from file data
         person_image = Image.open(person_image_file).convert("RGB")
@@ -87,17 +75,10 @@ def infer():
         result_image.save(img_byte_arr, format='PNG')
         img_byte_arr = img_byte_arr.getvalue()
 
-        # Return the image as response
-        return send_file(
-            BytesIO(img_byte_arr),
-            mimetype='image/png',
-            as_attachment=False,
-            download_name='result.png'
-        )
+        return result_image
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 8080))  # Default to 8080
-    app.run(host="0.0.0.0", port=port)
+    infer(person_image_file="yo.png",cloth_image_file="sweater.png")
