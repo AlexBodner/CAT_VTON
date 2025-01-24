@@ -40,7 +40,7 @@ def infer(person_image_file,cloth_image_file):
     # Extract input parameters
     cloth_type ='upper'
     width = 768
-    height = 1024
+    height = 512
     num_inference_steps = 50
     guidance_scale = 3.0
     seed = 42
