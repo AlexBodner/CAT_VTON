@@ -12,7 +12,7 @@ import openvino as ov
 
 core = ov.Core()
 
-device ='cuda'
+device ='GPU'
 
 from ov_catvton_helper import (
     get_compiled_pipeline,
