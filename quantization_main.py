@@ -12,9 +12,8 @@ import openvino as ov
 
 core = ov.Core()
 
-device = device_widget()
+device ='cuda'
 
-print(device)
 from ov_catvton_helper import (
     get_compiled_pipeline,
     get_compiled_automasker,
