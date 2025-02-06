@@ -96,8 +96,11 @@ from catvton_quantization_helper import (
 )
 
 pipeline, mask_processor, automasker = download_models()
+import time
+start_loading = time.perf_counter()
 pipeline = get_compiled_pipeline(pipeline, core, device, VAE_ENCODER_INT4_PATH, VAE_DECODER_INT4_PATH, UNET_INT8_PATH, vae_scaling_factor)
 automasker = get_compiled_automasker(automasker, core, device, DENSEPOSE_PROCESSOR_INT4_PATH, SCHP_PROCESSOR_ATR_INT4, SCHP_PROCESSOR_LIP_INT4)
+print("loading time", time.perf_counter()-start_loading)
 
 
 output_dir = "output"
@@ -111,7 +114,6 @@ cloth_image = Image.open("buzo.png").convert("RGB")
 # Resize images
 person_image = resize_and_crop(person_image, (768, 1024))
 cloth_image = resize_and_padding(cloth_image, (768, 1024))
-import time
 start = time.perf_counter()
 # Generate mask
 mask = automasker(person_image, "upper")["mask"]

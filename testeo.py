@@ -7,7 +7,7 @@ import torch
 from diffusers.image_processor import VaeImageProcessor
 from huggingface_hub import snapshot_download
 from PIL import Image
-
+import time
 from model.cloth_masker import AutoMasker, vis_mask
 from model.pipeline import CatVTONPipeline
 from utils import init_weight_dtype, resize_and_crop, resize_and_padding
@@ -103,6 +103,7 @@ def main():
 
     # Download checkpoint
     repo_path = snapshot_download(repo_id=args.resume_path)
+    start_loading = time.perf_counter()
 
     # Initialize pipeline and mask processor
     pipeline = CatVTONPipeline(
@@ -115,6 +116,7 @@ def main():
         skip_safety_check = True
 
     )
+    
     mask_processor = VaeImageProcessor(
         vae_scale_factor=8, do_normalize=False, do_binarize=True, do_convert_grayscale=True
     )
@@ -123,6 +125,7 @@ def main():
         schp_ckpt=os.path.join(repo_path, "SCHP"),
         device="cuda",
     )
+    print("loading time", time.perf_counter()-start_loading)
 
     # Read images
     person_image = Image.open(args.person_image_path).convert("RGB")
@@ -131,10 +134,12 @@ def main():
     # Resize images
     person_image = resize_and_crop(person_image, (args.width, args.height))
     cloth_image = resize_and_padding(cloth_image, (args.width, args.height))
-
+    import time
+    start = time.perf_counter()
     # Generate mask
     mask = automasker(person_image, args.cloth_type)["mask"]
     mask = mask_processor.blur(mask, blur_factor=9)
+    print("mask creation normal", time.perf_counter()-start)
 
     # Generate random seed
     generator = torch.Generator(device="cuda").manual_seed(args.seed) if args.seed != -1 else None
@@ -148,6 +153,7 @@ def main():
         guidance_scale=args.guidance_scale,
         generator=generator,
     )[0]
+    print("whole pipe",time.perf_counter()-start)
 
     # Save results
     os.makedirs(args.output_dir, exist_ok=True)
