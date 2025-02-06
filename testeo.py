@@ -112,6 +112,8 @@ def main():
         weight_dtype=init_weight_dtype(args.mixed_precision),
         use_tf32=False,
         device="cuda",
+        skip_safety_check = True
+
     )
     mask_processor = VaeImageProcessor(
         vae_scale_factor=8, do_normalize=False, do_binarize=True, do_convert_grayscale=True

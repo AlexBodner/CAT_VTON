@@ -42,7 +42,7 @@ def infer(person_image_file,cloth_image_file):
     width = 768
     height = 512
     num_inference_steps = 50
-    guidance_scale = 3.0
+    guidance_scale = 30.0
     seed = 42
 
     # Resize images
