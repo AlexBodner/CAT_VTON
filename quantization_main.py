@@ -11,7 +11,7 @@ import openvino as ov
 
 
 core = ov.Core()
-
+print(   core.available_devices + ["AUTO"])
 device ='GPU'
 
 from ov_catvton_helper import (
