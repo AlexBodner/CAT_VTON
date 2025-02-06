@@ -211,9 +211,9 @@ class ConvSchpProcessorWrapper(torch.nn.Module):
 
 
 def get_compiled_pipeline(pipeline, core, device, vae_encoder_path, vae_decoder_path, unet_path, vae_scaling_factor):
-    compiled_unet = core.compile_model(unet_path, device.value)
-    compiled_vae_encoder = core.compile_model(vae_encoder_path, device.value)
-    compiled_vae_decoder = core.compile_model(vae_decoder_path, device.value)
+    compiled_unet = core.compile_model(unet_path, device)
+    compiled_vae_encoder = core.compile_model(vae_encoder_path, device)
+    compiled_vae_decoder = core.compile_model(vae_decoder_path, device)
 
     pipeline.vae = VAEWrapper(compiled_vae_encoder, compiled_vae_decoder, vae_scaling_factor)
     pipeline.unet = ConvUnetWrapper(compiled_unet)
@@ -222,9 +222,9 @@ def get_compiled_pipeline(pipeline, core, device, vae_encoder_path, vae_decoder_
 
 
 def get_compiled_automasker(automasker, core, device, densepose_processor_path, schp_processor_atr_path, schp_processor_lip_path):
-    compiled_densepose_processor = core.compile_model(densepose_processor_path, device.value)
-    compiled_schp_processor_atr = core.compile_model(schp_processor_atr_path, device.value)
-    compiled_schp_processor_lip = core.compile_model(schp_processor_lip_path, device.value)
+    compiled_densepose_processor = core.compile_model(densepose_processor_path, device)
+    compiled_schp_processor_atr = core.compile_model(schp_processor_atr_path, device)
+    compiled_schp_processor_lip = core.compile_model(schp_processor_lip_path, device)
 
     automasker.densepose_processor.predictor.model = ConvDenseposeProcessorWrapper(compiled_densepose_processor)
     automasker.schp_processor_atr.model = ConvSchpProcessorWrapper(compiled_schp_processor_atr)
